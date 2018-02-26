@@ -22,58 +22,109 @@ class Dissemble:
 
     # def__init__(self):
 
+    def parse_instruction(self,instruction):
+        parsed = []
+        output = ""
+        parsed.append(bin(instruction & 0b111111)[2:].zfill(6))
+        instruction = instruction >> 6
+        parsed.append(bin(instruction & 0b11111)[2:].zfill(5))
+        instruction = instruction >> 5
+        parsed.append(bin(instruction & 0b11111)[2:].zfill(5))
+        instruction = instruction >> 5
+        parsed.append(bin(instruction & 0b11111)[2:].zfill(5))
+        instruction = instruction >> 5
+        parsed.append(bin(instruction & 0b11111)[2:].zfill(5))
+        instruction = instruction >> 5
+        parsed.append(bin(instruction & 0b11111)[2:].zfill(5))
+        instruction = instruction >> 5
+        parsed.append(bin(instruction)[2:])
+        for i in reversed(parsed):
+            output += i + " "
+        return output
+
     def Disassemble(self,instruction):
+        output = ""
+        #Add PC here?
         if(instruction >> 31 == 0):
             validStr.append("N")
-            return
+            output += self.parse_instruction(instruction)
+            output += "Invalid Instruction"
+            return output
         else:
+            output += self.parse_instruction(instruction)
             validStr.append("Y")
 
         opcode = (instruction & 0b01111100000000000000000000000000) >> (32 - 6)
 
         if(opcode == 2):
             opcode_list.append(opcode_dictionary[opcode])
-
+            output += opcode_dictionary[opcode]
+            return output
         elif (opcode == 3):
             opcode_list.append(opcode_dictionary[opcode])
+            output += opcode_dictionary[opcode]
+            return output
 
         elif (opcode == 5):
             opcode_list.append(opcode_dictionary[opcode])
+            output += opcode_dictionary[opcode]
+            return output
 
         elif (opcode == 6):
             opcode_list.append(opcode_dictionary[opcode])
+            output += opcode_dictionary[opcode]
+            return output
 
         elif (opcode == 8):
             opcode_list.append(opcode_dictionary[opcode])
+            output += opcode_dictionary[opcode]
+            return output
 
         elif (opcode == 11):
             opcode_list.append(opcode_dictionary[opcode])
+            output += opcode_dictionary[opcode]
+            return output
 
         elif (opcode == 28):
             opcode_list.append(opcode_dictionary[opcode])
+            output += opcode_dictionary[opcode]
+            return output
 
         elif(opcode == 0):
             fcode = (instruction & 0b00000000000000000000000000111111)
 
             #SLL r0,r0,r0 expressed as NOP
             if(fcode == 0):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 2):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 8):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 10):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 32):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 34):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 36):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 37):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
             if (fcode == 38):
-                print(fcodes_dictionary[fcode])
+                output += fcodes_dictionary[fcode]
+                return output
+            else:
+                return ""
+        else:
+            return ""
 
 
     def run(self):
@@ -105,10 +156,11 @@ class Dissemble:
 
         with open(inputFileName, "r") as Input_File:
             for line in Input_File:
+                dissassembled_line = ""
                 instruction = int(line,2)
-                self.Disassemble(instruction)
+                dissassembled_line += self.Disassemble(instruction)
+                print(dissassembled_line)
 
-        print(opcode_list)
 
 
 dissme = Dissemble()
