@@ -45,6 +45,12 @@ class Dissemble:
         for i in reversed(parsed):
             output += i + " "
         return output
+    def Disassemble_Data(self,instruction, program_counter):
+        output = ""
+        output += bin(instruction)[2:].zfill(32)
+        output += " " + str(program_counter).ljust(3)
+        output += "  " + str(instruction)
+        return output
 
     def Disassemble(self,instruction,program_counter):
         output = ""
@@ -227,11 +233,17 @@ class Dissemble:
                     outputFileName = sys.argv[i + 1]
 
         program_counter = 96
+        break_flag = False
         with open(inputFileName, "r") as Input_File:
             for line in Input_File:
                 dissassembled_line = ""
                 instruction = int(line,2)
-                dissassembled_line += self.Disassemble(instruction,program_counter)
+                if(break_flag == False):
+                    dissassembled_line += self.Disassemble(instruction,program_counter)
+                    if (dissassembled_line[-5:] == "BREAK"):
+                        break_flag = True
+                else:
+                    dissassembled_line += self.Disassemble_Data(instruction,program_counter)
                 program_counter += 4
                 print(dissassembled_line)
 
