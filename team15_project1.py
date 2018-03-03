@@ -86,6 +86,10 @@ class Dissemble:
         elif (opcode == 5):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
+            output += "  "
+            output += registers[rs] + ", "
+            output += registers[rt] + ", "
+            output += "#" + str(immediate << 2)
             return output
 
         elif (opcode == 6):
@@ -116,6 +120,10 @@ class Dissemble:
         elif (opcode == 28):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
+            output += "   "
+            output += registers[rd] + ", "
+            output += registers[rs] + ", "
+            output += registers[rt]
             return output
 
         elif(opcode == 0):
@@ -131,12 +139,22 @@ class Dissemble:
                 return output
             if (fcode == 2):
                 output += fcodes_dictionary[fcode]
+                output += "   "
+                output += registers[rd] + ", "
+                output += registers[rt] + ", "
+                output += "#" + str(sa)
                 return output
             if (fcode == 8):
                 output += fcodes_dictionary[fcode]
+                output += "   "
+                output += registers[rs]
                 return output
             if (fcode == 10):
                 output += fcodes_dictionary[fcode]
+                output += "   "
+                output += registers[rd] + ", "
+                output += registers[rs] + ", "
+                output += registers[rt]
                 return output
             if(fcode == 13):
                 output += fcodes_dictionary[fcode]
@@ -157,12 +175,23 @@ class Dissemble:
                 return output
             if (fcode == 36):
                 output += fcodes_dictionary[fcode]
+                output += "   "
+                output += registers[rd] + ", "
+                output += registers[rs] + ", "
+                output += registers[rt]
                 return output
             if (fcode == 37):
                 output += fcodes_dictionary[fcode]
+                output += "   "
+                output += registers[rd] + ", "
+                output += registers[rs] + ", "
+                output += registers[rt]
                 return output
             if (fcode == 38):
                 output += fcodes_dictionary[fcode]
+                output += registers[rd] + ", "
+                output += registers[rs] + ", "
+                output += registers[rt]
                 return output
             else:
                 return ""
