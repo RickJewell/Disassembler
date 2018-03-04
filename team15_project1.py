@@ -45,11 +45,19 @@ class Dissemble:
         for i in reversed(parsed):
             output += i + " "
         return output
+
+    def Twos_Complement(self,value):
+        converted = int(value,2)
+        if(value[0] == "1"):
+            converted -= 2**len(value)
+            return converted
+        return converted
+
     def Disassemble_Data(self,instruction, program_counter):
         output = ""
         output += bin(instruction)[2:].zfill(32)
         output += " " + str(program_counter).ljust(3)
-        output += "  " + str(instruction)
+        output += "  " + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
         return output
 
     def Disassemble(self,instruction,program_counter):
@@ -73,7 +81,7 @@ class Dissemble:
         sa =     (instruction & 0b00000000000000000000011111000000) >> (32 - 26)
         fcode =  (instruction & 0b00000000000000000000000000111111)
         #needs converted from two's complement
-        immediate = (instruction & 0b00000000000000001111111111111111)
+        immediate = self.Twos_Complement(bin(instruction & 0b00000000000000001111111111111111)[2:].zfill(16))
 
         if(opcode == 2):
             opcode_list.append(opcode_dictionary[opcode])
@@ -206,23 +214,9 @@ class Dissemble:
 
 
     def run(self):
-        '''
-        global opcodeStr
-        global validStr
-        global arg1
-        global arg2
-        global arg3
-        global arg1Str
-        global arg2Str
-        global arg3Str
-        global mem
-        global binMen
-        global valid
-        '''
-
         global opcode
         global fcodes
-
+        global registers
 
         for i in range(len(sys.argv)):
 
