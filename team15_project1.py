@@ -65,9 +65,9 @@ class Dissemble:
         #Add the binary represetation to file output
         output += bin(instruction)[2:].zfill(32)
         #Add Program Counter to the file output
-        output += "           " + str(program_counter).ljust(3)
+        output += "\t" + str(program_counter).ljust(3)
         #Convert then add the value in decimal to the output file
-        output += "    " + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
+        output += "\t" + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
         return output
 
     def Disassemble(self,instruction,program_counter):
@@ -75,8 +75,8 @@ class Dissemble:
         #Add the instructions parsed for easier reading to the output file
         output += self.parse_instruction(instruction)
         # Add Program Counter to the file output
-        output += "    " + str(program_counter).ljust(3)
-        output += "    "
+        output += "\t" + str(program_counter).ljust(3)
+        output += "\t"
 
         #Check far left bit to see if we have a valid instruction
         if(instruction >> 31 == 0):
@@ -103,14 +103,14 @@ class Dissemble:
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
             target = (instruction & 0b00000011111111111111111111111111) << 2
-            output += "       " + "#" + str(target)
+            output += "\t" + "#" + str(target)
             return output
 
         #"LW"
         elif (opcode == 3):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "      "
+            output += "\t"
             output += registers[rt] + ", "
             output += str(immediate) + "(" + registers[rs] + ")"
             return output
@@ -119,7 +119,7 @@ class Dissemble:
         elif (opcode == 5):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "     "
+            output += "\t"
             output += registers[rs] + ", "
             output += registers[rt] + ", "
             output += "#" + str(immediate << 2)
@@ -129,7 +129,7 @@ class Dissemble:
         elif (opcode == 6):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "    "
+            output += "\t"
             output += registers[rs] + ", "
             output += "#" + str(immediate << 2)
             return output
@@ -138,7 +138,7 @@ class Dissemble:
         elif (opcode == 8):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "    "
+            output += "\t"
             output += registers[rt] + ", "
             output += registers[rs] + ", "
             output += "#" + str(immediate)
@@ -148,7 +148,7 @@ class Dissemble:
         elif (opcode == 11):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "      "
+            output += "\t"
             output += registers[rt] + ", "
             output += str(immediate) + "(" + registers[rs] + ")"
             return output
@@ -157,7 +157,7 @@ class Dissemble:
         elif (opcode == 28):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "     "
+            output += "\t"
             output += registers[rd] + ", "
             output += registers[rs] + ", "
             output += registers[rt]
@@ -173,7 +173,7 @@ class Dissemble:
                     output += fcodes_dictionary[-1]
                     return output
                 output += fcodes_dictionary[fcode]
-                output += "     "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rt] + ", "
                 output += "#" + str(sa)
@@ -181,7 +181,7 @@ class Dissemble:
             #"SRL"
             if (fcode == 2):
                 output += fcodes_dictionary[fcode]
-                output += "     "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rt] + ", "
                 output += "#" + str(sa)
@@ -190,14 +190,14 @@ class Dissemble:
             #"JR"
             if (fcode == 8):
                 output += fcodes_dictionary[fcode]
-                output += "      "
+                output += "\t"
                 output += registers[rs]
                 return output
 
             #"MOVZ"
             if (fcode == 10):
                 output += fcodes_dictionary[fcode]
-                output += "    "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -211,7 +211,7 @@ class Dissemble:
             #"ADD"
             if (fcode == 32):
                 output += fcodes_dictionary[fcode]
-                output += "     "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -220,7 +220,7 @@ class Dissemble:
             #"SUB"
             if (fcode == 34):
                 output += fcodes_dictionary[fcode]
-                output += "     "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -229,7 +229,7 @@ class Dissemble:
             #"AND"
             if (fcode == 36):
                 output += fcodes_dictionary[fcode]
-                output += "     "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -238,7 +238,7 @@ class Dissemble:
             #"OR"
             if (fcode == 37):
                 output += fcodes_dictionary[fcode]
-                output += "      "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -247,7 +247,7 @@ class Dissemble:
             #"XOR"
             if (fcode == 38):
                 output += fcodes_dictionary[fcode]
-                output += "     "
+                output += "\t"
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
