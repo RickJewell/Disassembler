@@ -56,15 +56,15 @@ class Dissemble:
     def Disassemble_Data(self,instruction, program_counter):
         output = ""
         output += bin(instruction)[2:].zfill(32)
-        output += " " + str(program_counter).ljust(3)
-        output += "  " + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
+        output += "           " + str(program_counter).ljust(3)
+        output += "    " + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
         return output
 
     def Disassemble(self,instruction,program_counter):
         output = ""
         #Add PC here?
         output += self.parse_instruction(instruction)
-        output += " " + str(program_counter).ljust(3)
+        output += "    " + str(program_counter).ljust(3)
         output += "    "
 
         if(instruction >> 31 == 0):
@@ -87,12 +87,12 @@ class Dissemble:
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
             target = (instruction & 0b00000011111111111111111111111111) << 2
-            output += "     " + "#" + str(target)
+            output += "       " + "#" + str(target)
             return output
         elif (opcode == 3):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "    "
+            output += "      "
             output += registers[rt] + ", "
             output += str(immediate) + "(" + registers[rs] + ")"
             return output
@@ -100,7 +100,7 @@ class Dissemble:
         elif (opcode == 5):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "  "
+            output += "     "
             output += registers[rs] + ", "
             output += registers[rt] + ", "
             output += "#" + str(immediate << 2)
@@ -109,7 +109,7 @@ class Dissemble:
         elif (opcode == 6):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "  "
+            output += "    "
             output += registers[rs] + ", "
             output += "#" + str(immediate << 2)
             return output
@@ -117,16 +117,16 @@ class Dissemble:
         elif (opcode == 8):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "  "
-            output += registers[rs] + ", "
+            output += "    "
             output += registers[rt] + ", "
+            output += registers[rs] + ", "
             output += "#" + str(immediate)
             return output
 
         elif (opcode == 11):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "    "
+            output += "      "
             output += registers[rt] + ", "
             output += str(immediate) + "(" + registers[rs] + ")"
             return output
@@ -134,7 +134,7 @@ class Dissemble:
         elif (opcode == 28):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
-            output += "   "
+            output += "     "
             output += registers[rd] + ", "
             output += registers[rs] + ", "
             output += registers[rt]
@@ -146,26 +146,26 @@ class Dissemble:
             #SLL r0,r0,r0 expressed as NOP
             if(fcode == 0):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "     "
                 output += registers[rd] + ", "
                 output += registers[rt] + ", "
                 output += "#" + str(sa)
                 return output
             if (fcode == 2):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "     "
                 output += registers[rd] + ", "
                 output += registers[rt] + ", "
                 output += "#" + str(sa)
                 return output
             if (fcode == 8):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "      "
                 output += registers[rs]
                 return output
             if (fcode == 10):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "    "
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -175,34 +175,35 @@ class Dissemble:
                 return output
             if (fcode == 32):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "     "
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
             if (fcode == 34):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "     "
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
             if (fcode == 36):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "     "
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
             if (fcode == 37):
                 output += fcodes_dictionary[fcode]
-                output += "   "
+                output += "      "
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
             if (fcode == 38):
                 output += fcodes_dictionary[fcode]
+                output += "     "
                 output += registers[rd] + ", "
                 output += registers[rs] + ", "
                 output += registers[rt]
@@ -228,6 +229,7 @@ class Dissemble:
 
         program_counter = 96
         break_flag = False
+        output_file = open(outputFileName,"w")
         with open(inputFileName, "r") as Input_File:
             for line in Input_File:
                 dissassembled_line = ""
@@ -239,7 +241,10 @@ class Dissemble:
                 else:
                     dissassembled_line += self.Disassemble_Data(instruction,program_counter)
                 program_counter += 4
+                output_file.write(dissassembled_line)
+                output_file.write("\n")
                 print(dissassembled_line)
+        output_file.close()
 
 
 
