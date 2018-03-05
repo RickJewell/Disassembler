@@ -246,7 +246,6 @@ class Dissemble:
                 program_counter += 4
                 output_file.write(dissassembled_line)
                 output_file.write("\n")
-                print(dissassembled_line)
         output_file.close()
 
 
