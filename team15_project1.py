@@ -46,6 +46,8 @@ class Dissemble:
             output += i + " "
         return output
 
+    #Converter for two's Complement signed integer
+    #Used on data and immediate values
     def Twos_Complement(self,value):
         converted = int(value,2)
         if(value[0] == "1"):
@@ -55,18 +57,23 @@ class Dissemble:
 
     def Disassemble_Data(self,instruction, program_counter):
         output = ""
+        #Add the binary represetation to file output
         output += bin(instruction)[2:].zfill(32)
+        #Add Program Counter to the file output
         output += "           " + str(program_counter).ljust(3)
+        #Convert then add the value in decimal to the output file
         output += "    " + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
         return output
 
     def Disassemble(self,instruction,program_counter):
         output = ""
-        #Add PC here?
+        #Add the instructions parsed for easier reading to the output file
         output += self.parse_instruction(instruction)
+        # Add Program Counter to the file output
         output += "    " + str(program_counter).ljust(3)
         output += "    "
 
+        #Check far left bit to see if we have a valid instruction
         if(instruction >> 31 == 0):
             validStr.append("N")
             output += "Invalid Instruction"
@@ -74,21 +81,27 @@ class Dissemble:
         else:
             validStr.append("Y")
 
+        #opcode minus the valid bit
         opcode = (instruction & 0b01111100000000000000000000000000) >> (32 - 6)
+        #four register sections of the instruction 5 bits each
         rs =     (instruction & 0b00000011111000000000000000000000) >> (32 - 11)
         rt =     (instruction & 0b00000000000111110000000000000000) >> (32 - 16)
         rd =     (instruction & 0b00000000000000001111100000000000) >> (32 - 21)
         sa =     (instruction & 0b00000000000000000000011111000000) >> (32 - 26)
+        #bits 5-0 that represent the fcode
         fcode =  (instruction & 0b00000000000000000000000000111111)
-        #needs converted from two's complement
+        #Immediate value converted from two's complement, bits 15-0
         immediate = self.Twos_Complement(bin(instruction & 0b00000000000000001111111111111111)[2:].zfill(16))
 
+        #"J"
         if(opcode == 2):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
             target = (instruction & 0b00000011111111111111111111111111) << 2
             output += "       " + "#" + str(target)
             return output
+
+        #"LW"
         elif (opcode == 3):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
@@ -97,6 +110,7 @@ class Dissemble:
             output += str(immediate) + "(" + registers[rs] + ")"
             return output
 
+        #"BNE"
         elif (opcode == 5):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
@@ -106,6 +120,7 @@ class Dissemble:
             output += "#" + str(immediate << 2)
             return output
 
+        #"BLEZ"
         elif (opcode == 6):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
@@ -114,6 +129,7 @@ class Dissemble:
             output += "#" + str(immediate << 2)
             return output
 
+        #"ADDI"
         elif (opcode == 8):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
@@ -123,6 +139,7 @@ class Dissemble:
             output += "#" + str(immediate)
             return output
 
+        #"SW"
         elif (opcode == 11):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
@@ -131,6 +148,7 @@ class Dissemble:
             output += str(immediate) + "(" + registers[rs] + ")"
             return output
 
+        #"MUL"
         elif (opcode == 28):
             opcode_list.append(opcode_dictionary[opcode])
             output += opcode_dictionary[opcode]
@@ -140,10 +158,11 @@ class Dissemble:
             output += registers[rt]
             return output
 
+        #Special
         elif(opcode == 0):
             fcode = (instruction & 0b00000000000000000000000000111111)
 
-            #SLL r0,r0,r0 expressed as NOP
+            #"SLL" or r0,r0,r0 expressed as NOP
             if(fcode == 0):
                 if(rd == 0 & rt == 0 & sa == 0):
                     output += fcodes_dictionary[-1]
@@ -154,6 +173,7 @@ class Dissemble:
                 output += registers[rt] + ", "
                 output += "#" + str(sa)
                 return output
+            #"SRL"
             if (fcode == 2):
                 output += fcodes_dictionary[fcode]
                 output += "     "
@@ -161,11 +181,15 @@ class Dissemble:
                 output += registers[rt] + ", "
                 output += "#" + str(sa)
                 return output
+
+            #"JR"
             if (fcode == 8):
                 output += fcodes_dictionary[fcode]
                 output += "      "
                 output += registers[rs]
                 return output
+
+            #"MOVZ"
             if (fcode == 10):
                 output += fcodes_dictionary[fcode]
                 output += "    "
@@ -173,9 +197,13 @@ class Dissemble:
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
+
+            #"BREAK"
             if(fcode == 13):
                 output += fcodes_dictionary[fcode]
                 return output
+
+            #"ADD"
             if (fcode == 32):
                 output += fcodes_dictionary[fcode]
                 output += "     "
@@ -183,6 +211,8 @@ class Dissemble:
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
+
+            #"SUB"
             if (fcode == 34):
                 output += fcodes_dictionary[fcode]
                 output += "     "
@@ -190,6 +220,8 @@ class Dissemble:
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
+
+            #"AND"
             if (fcode == 36):
                 output += fcodes_dictionary[fcode]
                 output += "     "
@@ -197,6 +229,8 @@ class Dissemble:
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
+
+            #"OR"
             if (fcode == 37):
                 output += fcodes_dictionary[fcode]
                 output += "      "
@@ -204,6 +238,8 @@ class Dissemble:
                 output += registers[rs] + ", "
                 output += registers[rt]
                 return output
+
+            #"XOR"
             if (fcode == 38):
                 output += fcodes_dictionary[fcode]
                 output += "     "
@@ -230,6 +266,7 @@ class Dissemble:
             elif (sys.argv[i] == '-o' and i < (len(sys.argv) - 1)): \
                     outputFileName = sys.argv[i + 1]
 
+        #Assume that the program counter begins at 96
         program_counter = 96
         break_flag = False
         output_file = open(outputFileName,"w")
@@ -237,8 +274,10 @@ class Dissemble:
             for line in Input_File:
                 dissassembled_line = ""
                 instruction = int(line,2)
+                #While we havent reach the break line in instructions
                 if(break_flag == False):
                     dissassembled_line += self.Disassemble(instruction,program_counter)
+                    #After the break instruction begin processing the data
                     if (dissassembled_line[-5:] == "BREAK"):
                         break_flag = True
                 else:
