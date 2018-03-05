@@ -15,7 +15,7 @@ binMem = []  # <type 'list'>: ['11111111111111111111111111111111', '111111111111
 valid = []
 opcode_list = []
 opcode_dictionary = {2: "J", 3: "LW", 5: "BNE", 6: "BLEZ", 8: "ADDI", 11: "SW", 28: "MUL" }
-fcodes_dictionary = {0: "SLL", 2: "SRL", 8: "JR", 10: "MOVZ", 13:"BREAK", 32: "ADD", 34: "SUB", 36: "AND", 37: "OR", 38: "XOR"}
+fcodes_dictionary = {-1: "NOP",0: "SLL", 2: "SRL", 8: "JR", 10: "MOVZ", 13:"BREAK", 32: "ADD", 34: "SUB", 36: "AND", 37: "OR", 38: "XOR"}
 registers = {
 	 0:"R0",1:"R1",2:"R2",3:"R3",4:"R4",5:"R5",6:"R6",7:"R7",8:"R8",9:"R9",10:"R10",11:"R11",12:"R12",13:"R13",14:"R14",15:"R15",
 	16:"R16",17:"R17",18:"R18",19:"R19",20:"R20",21:"R21",22:"R22",23:"R23",24:"R24",25:"R25",26:"R26",27:"R27",28:"R28",29:"R29",30:"R30",31:"R31"
@@ -145,6 +145,9 @@ class Dissemble:
 
             #SLL r0,r0,r0 expressed as NOP
             if(fcode == 0):
+                if(rd == 0 & rt == 0 & sa == 0):
+                    output += fcodes_dictionary[-1]
+                    return output
                 output += fcodes_dictionary[fcode]
                 output += "     "
                 output += registers[rd] + ", "
