@@ -47,8 +47,12 @@ class Dissemble:
         parsed.append(bin(instruction & 0b11111)[2:].zfill(5))
         instruction = instruction >> 5
         parsed.append(bin(instruction)[2:])
+        count = 7
         for i in reversed(parsed):
-            output += i + " "
+            output += i
+            if (count > 1):
+                output += " "
+            count =  count -1
         return output
 
     #Converter for two's Complement signed integer
@@ -65,7 +69,7 @@ class Dissemble:
         #Add the binary represetation to file output
         output += bin(instruction)[2:].zfill(32)
         #Add Program Counter to the file output
-        output += "\t" + str(program_counter).ljust(3)
+        output += "\t" + str(program_counter)
         #Convert then add the value in decimal to the output file
         output += "\t" + str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
         return output
@@ -75,7 +79,7 @@ class Dissemble:
         #Add the instructions parsed for easier reading to the output file
         output += self.parse_instruction(instruction)
         # Add Program Counter to the file output
-        output += "\t" + str(program_counter).ljust(3)
+        output += "\t" + str(program_counter)
         output += "\t"
 
         #Check far left bit to see if we have a valid instruction
