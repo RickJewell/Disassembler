@@ -32,6 +32,7 @@ registerReversed = {
 }
 instructionStr = []
 registerStorage = [0] * 32
+dataAddr = []
 
 
 class Dissemble:
@@ -83,7 +84,7 @@ class Dissemble:
         #Convert then add the value in decimal to the output file
         dataValue = str(self.Twos_Complement(bin(instruction)[2:].zfill(32)))
         output += "\t" + dataValue
-        dataStorage.append(dataValue)
+        dataStorage.append(int(dataValue))
         return output
 
     def Disassemble(self,instruction,program_counter):
@@ -349,70 +350,102 @@ class Dissemble:
         else:
             newPC = arg1[validInstruc]
             newInstrucNum = (int(newPC) - program_counter) / 4
-            return output, newPC, int(newInstrucNum)
+            return output, int(newPC), int(newInstrucNum)
     def LW(self,validInstruc,program_counter):
         output = str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + str(arg2[validInstruc]) + "("+ arg3[validInstruc] +")"
+        a = int((int(arg2[validInstruc]) - dataAddr[0]) / 4)
+        b = registerStorage[registerReversed[arg3[validInstruc]]]
+        registerStorage[registerReversed[arg1[validInstruc]]] = dataStorage[int(int((int(arg2[validInstruc]) - dataAddr[0]
+          + registerStorage[registerReversed[arg3[validInstruc]]])/4))]
         return output
     def BNE(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + "#" + str(arg3[validInstruc])
         if(registerStorage[registerReversed[arg1[validInstruc]]] ==  registerStorage[registerReversed[arg2[validInstruc]]]):
             return output, program_counter + 4,  1
         else:
-            newPC = program_counter + 4 + (int(arg3[validInstruc]) << 2)
+            newPC = program_counter + 4 + (int(arg3[validInstruc]) )
             newInstrucNum = (newPC - program_counter) / 4
-            return output, newPC, int(newInstrucNum)
+            return output, int(newPC), int(newInstrucNum)
     def BLEZ(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" +  arg1[validInstruc] + ", " + "#" + str(arg2[validInstruc])
+        test = registerStorage[registerReversed[arg1[validInstruc]]]
         if(registerStorage[registerReversed[arg1[validInstruc]]] > 0):
             return output, program_counter + 4, 1
         else:
-            newPC = program_counter + 4 + (int(arg2[validInstruc]) << 2)
+            test = arg2[validInstruc]
+            newPC = program_counter + 4 + (int(arg2[validInstruc]) )
             newInstrucNum = (newPC - program_counter) / 4
-            return output, newPC, int(newInstrucNum)
+            return output, int(newPC), int(newInstrucNum)
     def ADDI(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + "#" + str(arg3[validInstruc])
         registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] + int(arg3[validInstruc])
         return output
     def SW(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + str(arg2[validInstruc]) + "("+ arg3[validInstruc] +")"
+        test = registerStorage[registerReversed[arg1[validInstruc]]]
+        a = int(arg2[validInstruc]) - dataAddr[0]
+        b = registerStorage[registerReversed[arg3[validInstruc]]]
+        c = dataAddr[0]
+        dataStorage[int(int((int(arg2[validInstruc]) - dataAddr[0] + registerStorage[registerReversed[arg3[validInstruc]]])) / 4)] = \
+        registerStorage[registerReversed[arg1[validInstruc]]]
         return output
     def MUL(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] * \
+                                                                registerStorage[registerReversed[arg3[validInstruc]]]
         return output
     def NOP(self,validInstruc,program_counter):
-        output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + ""
+        output =str(program_counter) + "\t" + opcode_list[validInstruc]
         return output
     def SRL(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + "#" + str(arg3[validInstruc])
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] >> \
+                                                                int(arg3[validInstruc])
         return output
     def SLL(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + "#" + str(arg3[validInstruc])
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] << \
+                                                                int(arg3[validInstruc])
         return output
     def JR(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc]
         newPC = registerStorage[registerReversed[arg1[validInstruc]]]
         newInstrucNum = (newPC - program_counter) / 4
-        return output,newPC,int(newInstrucNum)
+        return output,int(newPC),int(newInstrucNum)
     def MOVZ(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
-        return output
+        if(registerStorage[registerReversed[arg3[validInstruc]]] == 0):
+            registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]]
+            return output
+        else:
+            return output
     def BREAK(self,validInstruc,program_counter):
-        output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + ""
+        output =str(program_counter) + "\t" + opcode_list[validInstruc]
         return output
     def ADD(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] + \
+                                                                registerStorage[registerReversed[arg3[validInstruc]]]
         return output
     def SUB(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] - \
+                                                                registerStorage[registerReversed[arg3[validInstruc]]]
         return output
     def AND(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] & \
+                                                                registerStorage[registerReversed[arg3[validInstruc]]]
         return output
     def OR(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] | \
+                                                                registerStorage[registerReversed[arg3[validInstruc]]]
         return output
     def XOR(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + arg2[validInstruc] + ", " + arg3[validInstruc]
+        registerStorage[registerReversed[arg1[validInstruc]]] = registerStorage[registerReversed[arg2[validInstruc]]] ^ \
+                                                                registerStorage[registerReversed[arg3[validInstruc]]]
         return output
 
 
@@ -444,7 +477,7 @@ class Dissemble:
                     dissassembled_line += self.Disassemble(instruction,program_counter)
                     #After the break instruction begin processing the data
                     if (dissassembled_line[-5:] == "BREAK"):
-                        dataAddr = program_counter + 4
+                        dataAddr.append(program_counter + 4)
                         break_flag = True
                 else:
                     dissassembled_line += self.Disassemble_Data(instruction,program_counter)
@@ -483,20 +516,20 @@ class Dissemble:
 
             elif (opcode_list[validInstrucNum] == "J"):
                 instrucString, newPC, newInstrucNum = self.J(validInstrucNum,program_counter)
-                #program_counter = newPC - 4
-                #validInstrucNum += newInstrucNum -1
+                program_counter = newPC - 4
+                validInstrucNum += newInstrucNum -1
             elif (opcode_list[validInstrucNum] == "BNE"):
                 instrucString, newPC, newInstrucNum = self.BNE(validInstrucNum,program_counter)
-                #program_counter = newPC - 4
-                #validInstrucNum += newInstrucNum -1
+                program_counter = newPC - 4
+                validInstrucNum += newInstrucNum -1
             elif (opcode_list[validInstrucNum] == "BLEZ"):
                 instrucString, newPC, newInstrucNum = self.BLEZ(validInstrucNum,program_counter)
-                #program_counter = newPC - 4
-                #validInstrucNum += newInstrucNum -1
+                program_counter = newPC - 4
+                validInstrucNum += newInstrucNum -1
             elif (opcode_list[validInstrucNum] == "JR"):
                 instrucString, newPC, newInstrucNum = self.JR(validInstrucNum,program_counter)
-                #program_counter = newPC - 4
-                #validInstrucNum += newInstrucNum -1
+                program_counter = newPC - 4
+                validInstrucNum += newInstrucNum -1
 
             cycleLine = ""
 
@@ -520,8 +553,8 @@ class Dissemble:
             output_file.write("\n")
             output_file.write("data:" + "\n")
             i = 0;
-            d = dataAddr
-            while i < (len(arg1)):
+            d = dataAddr[0]
+            while i < (len(dataStorage)):
 
                 dataRange = dataStorage[i:i+8]
                 dataString = []
