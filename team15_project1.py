@@ -382,10 +382,11 @@ class Dissemble:
         return output
     def SW(self,validInstruc,program_counter):
         output =str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + str(arg2[validInstruc]) + "("+ arg3[validInstruc] +")"
-        test = registerStorage[registerReversed[arg1[validInstruc]]]
-        a = int(arg2[validInstruc]) - dataAddr[0]
-        b = registerStorage[registerReversed[arg3[validInstruc]]]
-        c = dataAddr[0]
+
+        while (int(int((int(arg2[validInstruc]) - dataAddr[0] + registerStorage[
+            registerReversed[arg3[validInstruc]]])) / 4) >= len(dataStorage)):
+            dataStorage.append(0)
+
         dataStorage[int(int((int(arg2[validInstruc]) - dataAddr[0] + registerStorage[registerReversed[arg3[validInstruc]]])) / 4)] = \
         registerStorage[registerReversed[arg1[validInstruc]]]
         return output
