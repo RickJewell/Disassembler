@@ -353,8 +353,11 @@ class Dissemble:
             return output, int(newPC), int(newInstrucNum)
     def LW(self,validInstruc,program_counter):
         output = str(program_counter) + "\t" + opcode_list[validInstruc] + "\t" + arg1[validInstruc] + ", " + str(arg2[validInstruc]) + "("+ arg3[validInstruc] +")"
-        a = int((int(arg2[validInstruc]) - dataAddr[0]) / 4)
-        b = registerStorage[registerReversed[arg3[validInstruc]]]
+
+        while (int(int((int(arg2[validInstruc]) - dataAddr[0] + registerStorage[
+            registerReversed[arg3[validInstruc]]])) / 4) >= len(dataStorage)):
+            dataStorage.extend((0,0,0,0,0,0,0,0))
+
         registerStorage[registerReversed[arg1[validInstruc]]] = dataStorage[int(int((int(arg2[validInstruc]) - dataAddr[0]
           + registerStorage[registerReversed[arg3[validInstruc]]])/4))]
         return output
