@@ -385,7 +385,7 @@ class Dissemble:
 
         while (int(int((int(arg2[validInstruc]) - dataAddr[0] + registerStorage[
             registerReversed[arg3[validInstruc]]])) / 4) >= len(dataStorage)):
-            dataStorage.append(0)
+            dataStorage.extend((0,0,0,0,0,0,0,0))
 
         dataStorage[int(int((int(arg2[validInstruc]) - dataAddr[0] + registerStorage[registerReversed[arg3[validInstruc]]])) / 4)] = \
         registerStorage[registerReversed[arg1[validInstruc]]]
@@ -555,6 +555,8 @@ class Dissemble:
             output_file.write("data:" + "\n")
             i = 0;
             d = dataAddr[0]
+
+
             while i < (len(dataStorage)):
 
                 dataRange = dataStorage[i:i+8]
@@ -565,9 +567,11 @@ class Dissemble:
                 output_file.write(dataLine)
                 i+= 8
                 d += 32
-            output_file.write("\n")
+
+
             if(opcode_list[validInstrucNum] == "BREAK"):
                 break
+            output_file.write("\n")
             validInstrucNum += 1
             cycle += 1
 
